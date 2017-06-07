@@ -20,7 +20,7 @@ module.exports = class RotateFileStream {
     let logger;
     try {
       let stat = fs.statSync(this.logpath);
-      if (moment(stat.ctime).diff(new Date(), 'days') !== 0) {
+      if (moment(stat.atime, 'YYYYMMDD').diff(moment().format('YYYYMMDD'), 'days') !== 0) {
         if (logger) {
           logger.close();
         }
