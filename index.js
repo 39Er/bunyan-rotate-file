@@ -25,18 +25,17 @@ module.exports = class RotateFileStream {
           logger.close();
         }
         let pathArr = this.logpath.split('/');
-        fs.renameSync(this.logpath, util.format('%s.%s', pathArr[pathArr.length - 1], moment(stat.ctime).format('YYYYMMDD')));
+        fs.renameSync(this.logpath, util.format('%s.%s', pathArr[pathArr.length - 1], moment(stat.ctime).format('YYYYMMDDHHmmSS')));
       }
-      logger = fs.createWriteStream(this.logpath, { flags: 'a', encoding: 'utf8' });
     } catch (e) {
       if (e.errno === -4058) {
         let logdir = this.logpath.slice(0, this.logpath.lastIndexOf('\\'));
         if (!fs.existsSync(logdir)) {
           fs.mkdirSync(logdir);
         }
-        logger = fs.createWriteStream(this.logpath, { flags: 'a', encoding: 'utf8' });
       }
     }
+    logger = fs.createWriteStream(this.logpath, { flags: 'a', encoding: 'utf8' });
     let str = JSON.stringify(rec, safeCycles()) + '\n';
     logger.write(str);
   }
