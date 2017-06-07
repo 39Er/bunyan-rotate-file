@@ -1,5 +1,5 @@
 {
-  "name": "bunyan-rotate-file",
+  "name": "bunyan-rotate-file-stream",
   "version": "1.0.0",
   "description": "log bunyan rotate file stream",
   "main": "index.js",
