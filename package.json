@@ -1,0 +1,28 @@
+{
+  "name": "bunyan-rotate-file",
+  "version": "1.0.0",
+  "description": "log bunyan rotate file stream",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/39Er/bunyan-rotate-file.git"
+  },
+  "keywords": [
+    "log",
+    "bunyan",
+    "stream"
+  ],
+  "author": "39Er",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/39Er/bunyan-rotate-file/issues"
+  },
+  "homepage": "https://github.com/39Er/bunyan-rotate-file#readme",
+  "dependencies": {
+    "bunyan": "^1.8.10",
+    "moment": "^2.18.1"
+  }
+}
