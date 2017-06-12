@@ -1,11 +1,12 @@
 'use strict';
 
 const fs = require('fs');
-const bunyan = require('bunyan');
-const moment = require('moment');
 const util = require('util');
 const path = require('path');
+const bunyan = require('bunyan');
+const moment = require('moment');
 
+const sep = path.sep;
 const safeCycles = bunyan.safeCycles;
 
 /**
@@ -24,12 +25,13 @@ module.exports = class RotateFileStream {
         if (logger) {
           logger.close();
         }
-        let pathArr = this.logpath.split('/');
-        fs.renameSync(this.logpath, util.format('%s.%s', pathArr[pathArr.length - 1], moment(stat.ctime).format('YYYYMMDDHHmmSS')));
+        fs.renameSync(this.logpath, util.format('%s.%s', this.logpath, moment(stat.ctime).format('YYYYMMDD')));
       }
     } catch (e) {
-      if (e.errno === -4058) {
-        let logdir = this.logpath.slice(0, this.logpath.lastIndexOf('\\'));
+      console.log(e);
+      if (e.code === 'ENOENT') {
+        let logdir = this.logpath.slice(0, this.logpath.lastIndexOf(sep));
+        console.log(logdir);
         if (!fs.existsSync(logdir)) {
           fs.mkdirSync(logdir);
         }
