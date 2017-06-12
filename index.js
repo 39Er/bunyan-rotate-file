@@ -28,10 +28,8 @@ module.exports = class RotateFileStream {
         fs.renameSync(this.logpath, util.format('%s.%s', this.logpath, moment(stat.ctime).format('YYYYMMDD')));
       }
     } catch (e) {
-      console.log(e);
       if (e.code === 'ENOENT') {
         let logdir = this.logpath.slice(0, this.logpath.lastIndexOf(sep));
-        console.log(logdir);
         if (!fs.existsSync(logdir)) {
           fs.mkdirSync(logdir);
         }
