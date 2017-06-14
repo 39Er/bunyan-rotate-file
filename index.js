@@ -18,6 +18,7 @@ module.exports = class RotateFileStream {
     this.logpath = logpath;
   }
   write(rec) {
+    rec.time = moment().format('YYYY-MM-DDTHH:mm:ss');
     let logger;
     try {
       let stat = fs.statSync(this.logpath);
