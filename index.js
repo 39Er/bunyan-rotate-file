@@ -14,30 +14,41 @@ const safeCycles = bunyan.safeCycles;
  * @param [string] logpath
  */
 module.exports = class RotateFileStream {
+
   constructor(logpath) {
-    this.logpath = logpath;
+    this.logger = _createStream(logpath);
   }
+
   write(rec) {
     rec.time = moment().format('YYYY-MM-DDTHH:mm:ss');
-    let logger;
-    try {
-      let stat = fs.statSync(this.logpath);
-      if (moment(stat.atime, 'YYYYMMDD').diff(moment().format('YYYYMMDD'), 'days') !== 0) {
-        if (logger) {
-          logger.close();
-        }
-        fs.renameSync(this.logpath, util.format('%s.%s', this.logpath, moment(stat.ctime).format('YYYYMMDD')));
+    let str = JSON.stringify(rec, safeCycles()) + '\n';
+    this.logger.write(str);
+  }
+  
+}
+
+/**
+ * create log writeStream
+ * @param {String} logpath 
+ */
+function _createStream(logpath) {
+  let logger = null;
+  try {
+    let stat = fs.statSync(logpath);
+    if (moment(stat.atime, 'YYYYMMDD').diff(moment().format('YYYYMMDD'), 'days') !== 0) {
+      if (logger) {
+        logger.close();
       }
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        let logdir = this.logpath.slice(0, this.logpath.lastIndexOf(sep));
-        if (!fs.existsSync(logdir)) {
-          fs.mkdirSync(logdir);
-        }
+      fs.renameSync(logpath, util.format('%s.%s', logpath, moment(stat.ctime).format('YYYYMMDD')));
+    }
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      let logdir = logpath.slice(0, logpath.lastIndexOf(sep));
+      if (!fs.existsSync(logdir)) {
+        fs.mkdirSync(logdir);
       }
     }
-    logger = fs.createWriteStream(this.logpath, { flags: 'a', encoding: 'utf8' });
-    let str = JSON.stringify(rec, safeCycles()) + '\n';
-    logger.write(str);
   }
+  logger = fs.createWriteStream(logpath, { flags: 'a', encoding: 'utf8' });
+  return logger;
 }

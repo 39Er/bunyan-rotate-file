@@ -20,5 +20,6 @@ let logger = bunyan.createLogger({
   ],
 });
 
-logger.info('test bunyan info');
-logger.error('test bunyan error');
+setInterval(function () {
+  logger.error('test bunyan error');
+}, 2000);
