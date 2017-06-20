@@ -5,7 +5,6 @@ const util = require('util');
 const path = require('path');
 const bunyan = require('bunyan');
 const moment = require('moment');
-const once = require('lodash.once');
 
 const sep = path.sep;
 const safeCycles = bunyan.safeCycles;
@@ -22,9 +21,7 @@ module.exports = class RotateFileStream {
   }
 
   write(rec) {
-    if (!this.logger) {
-      this.logger = _createStream(this.logpath);
-    }
+    this.logger = _createStream(this.logpath, this.logger);
     rec.time = moment().format('YYYY-MM-DDTHH:mm:ss');
     let str = JSON.stringify(rec, safeCycles()) + '\n';
     this.logger.write(str);
@@ -36,13 +33,13 @@ module.exports = class RotateFileStream {
  * create log writeStream
  * @param {String} logpath 
  */
-function _createStream(logpath) {
-  let logger = null;
+function _createStream(logpath, logger) {
   try {
     let stat = fs.statSync(logpath);
     if (moment(stat.atime, 'YYYYMMDD').diff(moment().format('YYYYMMDD'), 'days') !== 0) {
       if (logger) {
         logger.close();
+        logger = null;
       }
       fs.renameSync(logpath, util.format('%s.%s', logpath, moment(stat.ctime).format('YYYYMMDD')));
     }
@@ -54,6 +51,8 @@ function _createStream(logpath) {
       }
     }
   }
-  logger = fs.createWriteStream(logpath, { flags: 'a', encoding: 'utf8' });
+  if (!logger) {
+    logger = fs.createWriteStream(logpath, { flags: 'a', encoding: 'utf8' });
+  }
   return logger;
 }
