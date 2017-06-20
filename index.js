@@ -5,6 +5,7 @@ const util = require('util');
 const path = require('path');
 const bunyan = require('bunyan');
 const moment = require('moment');
+const once = require('lodash.once');
 
 const sep = path.sep;
 const safeCycles = bunyan.safeCycles;
@@ -16,15 +17,19 @@ const safeCycles = bunyan.safeCycles;
 module.exports = class RotateFileStream {
 
   constructor(logpath) {
-    this.logger = _createStream(logpath);
+    this.logpath = logpath;
+    this.logger = null;
   }
 
   write(rec) {
+    if (!this.logger) {
+      this.logger = _createStream(this.logpath);
+    }
     rec.time = moment().format('YYYY-MM-DDTHH:mm:ss');
     let str = JSON.stringify(rec, safeCycles()) + '\n';
     this.logger.write(str);
   }
-  
+
 }
 
 /**
