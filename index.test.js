@@ -12,7 +12,7 @@ let logger = bunyan.createLogger({
     {
       level: 'error',
       type: 'raw',
-      stream: new RotateFileStream(path.join(__dirname, '/logs/error.log')),
+      stream: new RotateFileStream(path.join(__dirname, '/logs/error.log'),3),
     }, {
       level: 'info',
       stream: process.stdout,
